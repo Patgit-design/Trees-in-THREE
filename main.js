@@ -5,6 +5,7 @@ function main() {
     const canvas = document.querySelector('#c');
     const renderer = new THREE.WebGLRenderer({ canvas });
 
+    //camera
     const fov = 75;
     const aspect = 2;  // the canvas default
     const near = 0.1;
@@ -17,9 +18,10 @@ function main() {
     controls.minPolarAngle = 0;
     controls.maxPolarAngle = Math.PI / 2;
     controls.update();
-
+    //scene
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color('lightblue');
+    scene.background = new THREE.TextureLoader().load('/img/cloud.webp');
+    //lights
 
     function addLight(position) {
         const color = 0xFFFFFF;
@@ -32,12 +34,14 @@ function main() {
     addLight([-3, 1, 1]);
     addLight([2, 1, .5]);
 
+    //troncs
+
     const trunkRadius = .2;
     const trunkHeight = 1;
     const trunkRadialSegments = 12;
     const trunkGeometry = new THREE.CylinderGeometry(
         trunkRadius, trunkRadius, trunkHeight, trunkRadialSegments);
-
+    //feuillage en haut
     const topRadius = trunkRadius * 4;
     const topHeight = trunkHeight * 2;
     const topSegments = 12;
@@ -70,14 +74,19 @@ function main() {
     }
 
     // add ground
+
     {
         const size = 400;
+        const loader = new THREE.TextureLoader();
         const geometry = new THREE.PlaneGeometry(size, size);
-        const material = new THREE.MeshPhongMaterial({ color: 'gray' });
+        const material = new THREE.MeshBasicMaterial({ map: loader.load('/img/grassflowerlow.webp'), });
         const mesh = new THREE.Mesh(geometry, material);
         mesh.rotation.x = Math.PI * -0.5;
         scene.add(mesh);
     }
+
+
+    //rendre responsive
 
     function resizeRendererToDisplaySize(renderer) {
         const canvas = renderer.domElement;
@@ -90,7 +99,10 @@ function main() {
         return needResize;
     }
 
-    function render() {
+    function render(time) {
+
+        time *= 0.001;
+
         if (resizeRendererToDisplaySize(renderer)) {
             const canvas = renderer.domElement;
             camera.aspect = canvas.clientWidth / canvas.clientHeight;
